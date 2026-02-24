@@ -9,12 +9,14 @@ export function AuthProvider({ children }) {
   const { instance, accounts, inProgress } = useMsal();
   const [user, setUser] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
+  const [isInitialized, setIsInitialized] = React.useState(false);
 
   const fetchUserProfile = React.useCallback(async () => {
     if (accounts.length === 0) {
       setUser(null);
       setLoading(false);
-      return;
+      setIsInitialized(true);
+      return null;
     }
 
     try {
@@ -46,35 +48,44 @@ export function AuthProvider({ children }) {
         console.warn('Unable to fetch user photo:', photoError);
       }
 
-      setUser({
+      const userData = {
         id: profile.id,
         name: profile.displayName,
         email: profile.mail || profile.userPrincipalName,
         avatar: photoUrl,
-      });
+      };
+
+      setUser(userData);
+      setLoading(false);
+      setIsInitialized(true);
+      return userData;
     } catch (error) {
       console.error('Error fetching user profile:', error);
       setUser(null);
-    } finally {
       setLoading(false);
+      setIsInitialized(true);
+      return null;
     }
   }, [accounts, instance]);
 
   React.useEffect(() => {
-    if (inProgress === InteractionStatus.None) {
+    if (inProgress === InteractionStatus.None && !isInitialized) {
       fetchUserProfile();
     }
-  }, [inProgress, fetchUserProfile]);
+  }, [inProgress, isInitialized, fetchUserProfile]);
 
   const signIn = React.useCallback(async () => {
     try {
+      setLoading(true);
       const result = await instance.loginPopup(loginRequest);
-      // Immediately fetch user profile after successful login
       if (result) {
-        await fetchUserProfile();
+        const userData = await fetchUserProfile();
+        return userData;
       }
+      return null;
     } catch (error) {
       console.error('Login error:', error);
+      setLoading(false);
       throw error;
     }
   }, [instance, fetchUserProfile]);
