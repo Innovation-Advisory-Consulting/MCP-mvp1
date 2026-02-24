@@ -68,12 +68,16 @@ export function AuthProvider({ children }) {
 
   const signIn = React.useCallback(async () => {
     try {
-      await instance.loginPopup(loginRequest);
+      const result = await instance.loginPopup(loginRequest);
+      // Immediately fetch user profile after successful login
+      if (result) {
+        await fetchUserProfile();
+      }
     } catch (error) {
       console.error('Login error:', error);
       throw error;
     }
-  }, [instance]);
+  }, [instance, fetchUserProfile]);
 
   const signOut = React.useCallback(async () => {
     try {

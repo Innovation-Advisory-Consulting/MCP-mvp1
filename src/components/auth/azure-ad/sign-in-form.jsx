@@ -8,22 +8,26 @@ import { useAuth } from './auth-context';
 
 export function SignInForm() {
   const navigate = useNavigate();
-  const { signIn, isAuthenticated } = useAuth();
+  const { signIn, isAuthenticated, user, loading } = useAuth();
   const [isPending, setIsPending] = React.useState(false);
 
   React.useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
+    if (isAuthenticated && user) {
+      console.log('User authenticated, redirecting to dashboard');
+      navigate('/dashboard', { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   const handleSignIn = async () => {
     setIsPending(true);
     try {
       await signIn();
+      // After sign in, wait a moment for the user profile to load
+      setTimeout(() => {
+        navigate('/dashboard', { replace: true });
+      }, 1000);
     } catch (error) {
       console.error('Sign in error:', error);
-    } finally {
       setIsPending(false);
     }
   };
