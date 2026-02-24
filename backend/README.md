@@ -1,27 +1,25 @@
-# Customer Management Backend - Dataverse Integration
+# Customer Management Backend API
 
-Backend API service that connects to Microsoft Dynamics 365 Dataverse for customer management.
+High-performance Fastify-based backend service with Microsoft Dataverse integration for customer management.
 
 ## Features
 
-- RESTful API for customer CRUD operations
-- Microsoft Dataverse integration using OAuth 2.0 Client Credentials flow
-- Automatic token refresh and retry logic
-- CORS support for frontend integration
-- Docker containerization for Azure Container Apps
-- Production-ready error handling and logging
+- **Fastify Framework** - Ultra-fast web framework (3x faster than Express)
+- **Dataverse Integration** - OAuth 2.0 client credentials flow with automatic token refresh
+- **Rate Limiting** - Built-in protection (100 requests/minute)
+- **Security** - Helmet.js security headers
+- **Input Validation** - JSON Schema validation on all endpoints
+- **Structured Logging** - Pino logger with pretty formatting
+- **Health Checks** - `/health` and `/ready` endpoints for container orchestration
+- **CORS** - Configurable cross-origin resource sharing
+- **Graceful Shutdown** - Proper cleanup on SIGTERM/SIGINT
+- **Multi-stage Docker Build** - Optimized container image
 
 ## Prerequisites
 
-1. **Azure AD App Registration**
-   - Register an application in Azure Active Directory
-   - Configure API permissions for Dynamics 365
-   - Create a client secret
-   - Note down: Client ID, Client Secret, and Tenant ID
-
-2. **Dataverse Instance**
-   - Active Microsoft Dynamics 365 environment
-   - URL to your Dataverse instance (e.g., `https://yourorg.crm.dynamics.com`)
+- Node.js 20.x or higher
+- Microsoft Dataverse instance
+- Azure AD App Registration with Dataverse API permissions
 
 ## Environment Variables
 

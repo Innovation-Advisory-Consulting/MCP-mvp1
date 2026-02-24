@@ -3,11 +3,11 @@ import { dataverseClient } from '../services/dataverseClient.js';
 const CONTACT_ENTITY = 'contacts';
 
 export const customerController = {
-  async getAll(req, res) {
+  async getAll(request, reply) {
     try {
-      const { page = 1, limit = 10, search = '' } = req.query;
+      const { page = 1, limit = 10, search = '' } = request.query;
 
-      let query = `/${CONTACT_ENTITY}?$select=contactid,firstname,lastname,emailaddress1,telephone1,address1_city,address1_stateorprovince,address1_country,createdon`;
+      let query = `/${CONTACT_ENTITY}?$select=contactid,firstname,lastname,emailaddress1,telephone1,address1_city,address1_stateorprovince,address1_country,createdon&$count=true`;
 
       if (search) {
         const searchFilter = `(contains(firstname,'${search}') or contains(lastname,'${search}') or contains(emailaddress1,'${search}'))`;
@@ -36,7 +36,7 @@ export const customerController = {
         createdAt: contact.createdon,
       }));
 
-      res.json({
+      return reply.send({
         data: customers,
         pagination: {
           page: parseInt(page),
@@ -45,17 +45,17 @@ export const customerController = {
         },
       });
     } catch (error) {
-      console.error('Error fetching customers:', error);
-      res.status(500).json({
+      request.log.error(error, 'Error fetching customers');
+      return reply.code(500).send({
         error: 'Failed to fetch customers',
         message: error.response?.data?.error?.message || error.message,
       });
     }
   },
 
-  async getById(req, res) {
+  async getById(request, reply) {
     try {
-      const { id } = req.params;
+      const { id } = request.params;
 
       const query = `/${CONTACT_ENTITY}(${id})?$select=contactid,firstname,lastname,emailaddress1,telephone1,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,address1_country,createdon,modifiedon`;
 
@@ -76,30 +76,23 @@ export const customerController = {
         modifiedAt: contact.modifiedon,
       };
 
-      res.json({ data: customer });
+      return reply.send({ data: customer });
     } catch (error) {
       if (error.response?.status === 404) {
-        return res.status(404).json({ error: 'Customer not found' });
+        return reply.code(404).send({ error: 'Customer not found' });
       }
 
-      console.error('Error fetching customer:', error);
-      res.status(500).json({
+      request.log.error(error, 'Error fetching customer');
+      return reply.code(500).send({
         error: 'Failed to fetch customer',
         message: error.response?.data?.error?.message || error.message,
       });
     }
   },
 
-  async create(req, res) {
+  async create(request, reply) {
     try {
-      const { firstName, lastName, email, phone, address, city, state, postalCode, country } = req.body;
-
-      if (!firstName || !lastName || !email) {
-        return res.status(400).json({
-          error: 'Validation error',
-          message: 'firstName, lastName, and email are required',
-        });
-      }
+      const { firstName, lastName, email, phone, address, city, state, postalCode, country } = request.body;
 
       const contactData = {
         firstname: firstName,
@@ -130,20 +123,20 @@ export const customerController = {
         createdAt: result.createdon,
       };
 
-      res.status(201).json({ data: customer });
+      return reply.code(201).send({ data: customer });
     } catch (error) {
-      console.error('Error creating customer:', error);
-      res.status(500).json({
+      request.log.error(error, 'Error creating customer');
+      return reply.code(500).send({
         error: 'Failed to create customer',
         message: error.response?.data?.error?.message || error.message,
       });
     }
   },
 
-  async update(req, res) {
+  async update(request, reply) {
     try {
-      const { id } = req.params;
-      const { firstName, lastName, email, phone, address, city, state, postalCode, country } = req.body;
+      const { id } = request.params;
+      const { firstName, lastName, email, phone, address, city, state, postalCode, country } = request.body;
 
       const contactData = {};
 
@@ -173,34 +166,34 @@ export const customerController = {
         modifiedAt: result.modifiedon,
       };
 
-      res.json({ data: customer });
+      return reply.send({ data: customer });
     } catch (error) {
       if (error.response?.status === 404) {
-        return res.status(404).json({ error: 'Customer not found' });
+        return reply.code(404).send({ error: 'Customer not found' });
       }
 
-      console.error('Error updating customer:', error);
-      res.status(500).json({
+      request.log.error(error, 'Error updating customer');
+      return reply.code(500).send({
         error: 'Failed to update customer',
         message: error.response?.data?.error?.message || error.message,
       });
     }
   },
 
-  async delete(req, res) {
+  async delete(request, reply) {
     try {
-      const { id } = req.params;
+      const { id } = request.params;
 
       await dataverseClient.delete(`/${CONTACT_ENTITY}(${id})`);
 
-      res.status(204).send();
+      return reply.code(204).send();
     } catch (error) {
       if (error.response?.status === 404) {
-        return res.status(404).json({ error: 'Customer not found' });
+        return reply.code(404).send({ error: 'Customer not found' });
       }
 
-      console.error('Error deleting customer:', error);
-      res.status(500).json({
+      request.log.error(error, 'Error deleting customer');
+      return reply.code(500).send({
         error: 'Failed to delete customer',
         message: error.response?.data?.error?.message || error.message,
       });
