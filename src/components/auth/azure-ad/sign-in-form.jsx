@@ -1,21 +1,25 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMsal } from '@azure/msal-react';
+import { InteractionStatus } from '@azure/msal-browser';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useAuth } from './auth-context';
 
 export function SignInForm() {
   const navigate = useNavigate();
-  const { signIn, isAuthenticated, user } = useAuth();
+  const { inProgress } = useMsal();
+  const { signIn, isAuthenticated, user, loading } = useAuth();
   const [isPending, setIsPending] = React.useState(false);
 
   React.useEffect(() => {
-    if (isAuthenticated && user) {
+    if (isAuthenticated && user && !loading) {
       navigate('/dashboard', { replace: true });
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, loading, navigate]);
 
   const handleSignIn = async () => {
     setIsPending(true);
@@ -26,6 +30,17 @@ export function SignInForm() {
       setIsPending(false);
     }
   };
+
+  if (loading || inProgress === InteractionStatus.HandleRedirect || inProgress === InteractionStatus.Login) {
+    return (
+      <Stack spacing={4} alignItems="center">
+        <CircularProgress />
+        <Typography color="text.secondary" variant="body2">
+          Signing you in...
+        </Typography>
+      </Stack>
+    );
+  }
 
   return (
     <Stack spacing={4}>
