@@ -21,7 +21,6 @@ export function SignInForm() {
     setIsPending(true);
     try {
       await signIn();
-      setIsPending(false);
     } catch (error) {
       console.error('Sign in error:', error);
       setIsPending(false);

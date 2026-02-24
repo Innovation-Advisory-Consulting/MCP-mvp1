@@ -11,6 +11,18 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = React.useState(true);
   const [isInitialized, setIsInitialized] = React.useState(false);
 
+  React.useEffect(() => {
+    instance.handleRedirectPromise()
+      .then((response) => {
+        if (response && response.account) {
+          instance.setActiveAccount(response.account);
+        }
+      })
+      .catch((error) => {
+        console.error('Redirect error:', error);
+      });
+  }, [instance]);
+
   const fetchUserProfile = React.useCallback(async () => {
     if (accounts.length === 0) {
       setUser(null);
@@ -77,23 +89,20 @@ export function AuthProvider({ children }) {
   const signIn = React.useCallback(async () => {
     try {
       setLoading(true);
-      const result = await instance.loginPopup(loginRequest);
-      if (result) {
-        const userData = await fetchUserProfile();
-        return userData;
-      }
-      return null;
+      await instance.loginRedirect(loginRequest);
     } catch (error) {
       console.error('Login error:', error);
       setLoading(false);
       throw error;
     }
-  }, [instance, fetchUserProfile]);
+  }, [instance]);
 
   const signOut = React.useCallback(async () => {
     try {
-      await instance.logoutPopup();
       setUser(null);
+      await instance.logoutRedirect({
+        postLogoutRedirectUri: window.location.origin + '/auth/azure-ad/sign-in',
+      });
     } catch (error) {
       console.error('Logout error:', error);
       throw error;
