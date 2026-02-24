@@ -1,0 +1,14 @@
+{
+  "name": "Customer Management Dashboard",
+  "description": "Modern CRM interface for managing customer data",
+  "version": "1.0.0",
+  "template": "customer-management-crm",
+  "tags": ["crm", "customer-management", "dashboard", "react", "typescript", "tailwind"],
+  "features": [
+    "Customer list with search and filters",
+    "Create customer form",
+    "Responsive design",
+    "TypeScript support",
+    "Modern UI components"
+  ]
+}

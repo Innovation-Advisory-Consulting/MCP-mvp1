@@ -1,0 +1,12 @@
+Customer Management Dashboard - A clean and modern customer relationship management (CRM) interface built with React, TypeScript, and Tailwind CSS.
+
+Features:
+- Customer list view with search and filtering
+- Create new customer form with comprehensive fields
+- Responsive design optimized for all devices
+- Clean UI with Tailwind CSS styling
+- TypeScript for type safety
+- React Router for navigation
+- Lucide React icons
+
+Perfect starting point for building a full-featured CRM or customer management system.
