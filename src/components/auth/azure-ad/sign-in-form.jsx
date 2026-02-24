@@ -12,15 +12,16 @@ export function SignInForm() {
   const [isPending, setIsPending] = React.useState(false);
 
   React.useEffect(() => {
-    if (isAuthenticated && user && !isPending) {
+    if (isAuthenticated && user) {
       navigate('/dashboard', { replace: true });
     }
-  }, [isAuthenticated, user, isPending, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   const handleSignIn = async () => {
     setIsPending(true);
     try {
       await signIn();
+      setIsPending(false);
     } catch (error) {
       console.error('Sign in error:', error);
       setIsPending(false);
