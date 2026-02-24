@@ -25,6 +25,7 @@ import { isNavItemActive } from "@/lib/is-nav-item-active";
 import { useDialog } from "@/hooks/use-dialog";
 import { usePathname } from "@/hooks/use-pathname";
 import { usePopover } from "@/hooks/use-popover";
+import { useUser } from "@/components/auth/hooks";
 import { Dropdown } from "@/components/core/dropdown/dropdown";
 import { DropdownPopover } from "@/components/core/dropdown/dropdown-popover";
 import { DropdownTrigger } from "@/components/core/dropdown/dropdown-trigger";

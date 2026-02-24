@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 
 import { useDialog } from "@/hooks/use-dialog";
 import { usePopover } from "@/hooks/use-popover";
+import { useUser } from "@/components/auth/hooks";
 
 import { ContactsPopover } from "../contacts-popover";
 import { languageFlags, LanguagePopover } from "../language-popover";

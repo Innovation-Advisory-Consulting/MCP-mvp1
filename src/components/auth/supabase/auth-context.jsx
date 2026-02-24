@@ -48,3 +48,13 @@ export function useAuth() {
 
 	return context;
 }
+
+export function useUser() {
+	const context = React.useContext(AuthContext);
+
+	if (context === undefined) {
+		throw new Error("useUser must be used within an AuthProvider");
+	}
+
+	return context.user || { name: '', email: '', avatar: null };
+}
