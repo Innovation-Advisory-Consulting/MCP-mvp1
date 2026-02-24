@@ -10,18 +10,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [isInitialized, setIsInitialized] = React.useState(false);
-
-  React.useEffect(() => {
-    instance.handleRedirectPromise()
-      .then((response) => {
-        if (response && response.account) {
-          instance.setActiveAccount(response.account);
-        }
-      })
-      .catch((error) => {
-        console.error('Redirect error:', error);
-      });
-  }, [instance]);
+  const [redirectHandled, setRedirectHandled] = React.useState(false);
 
   const fetchUserProfile = React.useCallback(async () => {
     if (accounts.length === 0) {
@@ -81,10 +70,28 @@ export function AuthProvider({ children }) {
   }, [accounts, instance]);
 
   React.useEffect(() => {
-    if (inProgress === InteractionStatus.None && !isInitialized) {
+    if (!redirectHandled) {
+      instance.handleRedirectPromise()
+        .then((response) => {
+          setRedirectHandled(true);
+          if (response && response.account) {
+            instance.setActiveAccount(response.account);
+          }
+        })
+        .catch((error) => {
+          console.error('Redirect error:', error);
+          setRedirectHandled(true);
+          setLoading(false);
+          setIsInitialized(true);
+        });
+    }
+  }, [instance, redirectHandled]);
+
+  React.useEffect(() => {
+    if (redirectHandled && inProgress === InteractionStatus.None && !isInitialized) {
       fetchUserProfile();
     }
-  }, [inProgress, isInitialized, fetchUserProfile]);
+  }, [redirectHandled, inProgress, isInitialized, fetchUserProfile]);
 
   const signIn = React.useCallback(async () => {
     try {

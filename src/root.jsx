@@ -4,7 +4,7 @@ import * as React from "react";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { MsalProvider } from "@azure/msal-react";
-import { PublicClientApplication } from "@azure/msal-browser";
+import { PublicClientApplication, EventType } from "@azure/msal-browser";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 
 import "@/styles/global.css";
@@ -30,9 +30,26 @@ import { Toaster } from "@/components/core/toaster";
 
 const metadata = { title: appConfig.name };
 
-const msalInstance = appConfig.authStrategy === AuthStrategy.AZURE_AD
-	? new PublicClientApplication(msalConfig)
-	: null;
+let msalInstance = null;
+
+if (appConfig.authStrategy === AuthStrategy.AZURE_AD) {
+	msalInstance = new PublicClientApplication(msalConfig);
+
+	msalInstance.initialize().then(() => {
+		msalInstance.addEventCallback((event) => {
+			if (event.eventType === EventType.LOGIN_SUCCESS && event.payload?.account) {
+				msalInstance.setActiveAccount(event.payload.account);
+			}
+		});
+
+		const accounts = msalInstance.getAllAccounts();
+		if (accounts.length > 0) {
+			msalInstance.setActiveAccount(accounts[0]);
+		}
+	}).catch((error) => {
+		console.error('MSAL initialization error:', error);
+	});
+}
 
 // Define the AuthProvider based on the selected auth strategy
 // Remove this block if you are not using any auth strategy
