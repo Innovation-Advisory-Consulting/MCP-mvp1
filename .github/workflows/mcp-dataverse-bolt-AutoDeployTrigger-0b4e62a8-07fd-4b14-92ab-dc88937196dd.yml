@@ -2,28 +2,23 @@ name: Trigger auto deployment for mcp-dataverse-bolt
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
     paths:
       - "backend/**"
       - ".github/workflows/mcp-dataverse-bolt-AutoDeployTrigger-0b4e62a8-07fd-4b14-92ab-dc88937196dd.yml"
-
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     permissions:
       id-token: write
       contents: read
 
     steps:
-      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Login to Azure
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -31,19 +26,24 @@ jobs:
           tenant-id: ${{ secrets.MCPDATAVERSEBOLT_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.MCPDATAVERSEBOLT_AZURE_SUBSCRIPTION_ID }}
 
-      # 3️⃣ Build, Push & Deploy to Container Apps
       - name: Build and Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v2
         with:
-          # 🔥 IMPORTANTE: apunta al backend
           appSourcePath: ${{ github.workspace }}/backend
-          dockerfilePath: Dockerfile
+          dockerfilePath: ./Dockerfile
 
-          registryUrl: ${{ secrets.MCPDATAVERSEBOLT_REGISTRY_URL }}  # ejemplo: myacr.azurecr.io
+          registryUrl: ${{ secrets.MCPDATAVERSEBOLT_REGISTRY_URL }}
           registryUsername: ${{ secrets.MCPDATAVERSEBOLT_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.MCPDATAVERSEBOLT_REGISTRY_PASSWORD }}
 
           containerAppName: mcp-dataverse-bolt
           resourceGroup: mcp_mvp1_dataverse
-
           imageToBuild: ${{ secrets.MCPDATAVERSEBOLT_REGISTRY_URL }}/mcp-dataverse-bolt:${{ github.sha }}
+
+          # ✅ (recomendado) Inyectar env vars al Container App
+          environmentVariables: |
+            NODE_ENV=production
+            TENANT_ID=${{ secrets.MCPDATAVERSEBOLT_TENANT_ID }}
+            CONNECTION_URL=${{ secrets.MCPDATAVERSEBOLT_CONNECTION_URL }}
+            MCP_SERVER_NAME=DataverseMCPServer
+            BACKEND_PROTOCOL=HTTP
