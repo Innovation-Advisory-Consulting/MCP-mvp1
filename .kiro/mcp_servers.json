@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "dataverse": {
+      "command": "C:\\Users\\jassi\\.dotnet\\tools\\Microsoft.PowerPlatform.Dataverse.MCP.exe",
+      "args": [
+        "--EnvironmentUrl",
+        "https://org1a5040d9.crm.dynamics.com/",
+        "--ConnectionUrl",
+        "https://make.powerautomate.com/environments/Default-844828a2-3531-4c98-ad21-6ef60f8a3ef9/connections?apiName=shared_commondataserviceforapps&connectionName=shared-commondataser-0d3c25a4-193b-4cfe-82dc-2f88c41b1e50",
+        "--MCPServerName",
+        "DataverseMCPServer",
+        "--TenantId",
+        "844828a2-3531-4c98-ad21-6ef60f8a3ef9",
+        "--BackendProtocol",
+        "HTTPS"
+      ]
+    }
+  },
+  "preferences": {
+    "coworkWebSearchEnabled": true,
+    "sidebarMode": "chat",
+    "coworkScheduledTasksEnabled": false
+  }
+}

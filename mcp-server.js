@@ -17,7 +17,7 @@ class MCPClient {
   async connect() {
     return new Promise((resolve, reject) => {
       this.process = spawn(
-        'C:\\Users\\jassi\\.dotnet\\tools\\Microsoft.PowerPlatform.Dataverse.MCP.exe',
+        '/mnt/c/Users/jassi/.dotnet/tools/Microsoft.PowerPlatform.Dataverse.MCP.exe',
         [
           '--EnvironmentUrl', 'https://org1a5040d9.crm.dynamics.com/',
           '--ConnectionUrl', 'https://make.powerautomate.com/environments/Default-844828a2-3531-4c98-ad21-6ef60f8a3ef9/connections?apiName=shared_commondataserviceforapps&connectionName=shared-commondataser-0d3c25a4-193b-4cfe-82dc-2f88c41b1e50',
