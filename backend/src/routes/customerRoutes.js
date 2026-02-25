@@ -20,7 +20,7 @@ export async function registerCustomerRoutes(fastify) {
       params: {
         type: 'object',
         properties: {
-          id: { type: 'string', format: 'uuid' },
+          id: { type: 'string' },
         },
         required: ['id'],
       },
@@ -32,11 +32,10 @@ export async function registerCustomerRoutes(fastify) {
     schema: {
       body: {
         type: 'object',
-        required: ['firstName', 'lastName', 'email'],
+        required: ['name'],
         properties: {
-          firstName: { type: 'string', minLength: 1 },
-          lastName: { type: 'string', minLength: 1 },
-          email: { type: 'string', format: 'email' },
+          name: { type: 'string', minLength: 1 },
+          email: { type: 'string' },
           phone: { type: 'string' },
           address: { type: 'string' },
           city: { type: 'string' },
@@ -54,16 +53,15 @@ export async function registerCustomerRoutes(fastify) {
       params: {
         type: 'object',
         properties: {
-          id: { type: 'string', format: 'uuid' },
+          id: { type: 'string' },
         },
         required: ['id'],
       },
       body: {
         type: 'object',
         properties: {
-          firstName: { type: 'string' },
-          lastName: { type: 'string' },
-          email: { type: 'string', format: 'email' },
+          name: { type: 'string' },
+          email: { type: 'string' },
           phone: { type: 'string' },
           address: { type: 'string' },
           city: { type: 'string' },
@@ -81,7 +79,7 @@ export async function registerCustomerRoutes(fastify) {
       params: {
         type: 'object',
         properties: {
-          id: { type: 'string', format: 'uuid' },
+          id: { type: 'string' },
         },
         required: ['id'],
       },

@@ -30,7 +30,7 @@ const columns = [
 					<Link
 						color="inherit"
 						component={RouterLink}
-						href={paths.dashboard.customers.details("1")}
+						href={paths.dashboard.customers.details(row.id)}
 						sx={{ whiteSpace: "nowrap" }}
 						variant="subtitle2"
 					>
@@ -80,8 +80,8 @@ const columns = [
 		width: "150px",
 	},
 	{
-		formatter: () => (
-			<IconButton component={RouterLink} href={paths.dashboard.customers.details("1")}>
+		formatter: (row) => (
+			<IconButton component={RouterLink} href={paths.dashboard.customers.details(row.id)}>
 				<PencilSimpleIcon />
 			</IconButton>
 		),

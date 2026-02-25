@@ -1,16 +1,16 @@
 import { dataverseClient } from '../services/dataverseClient.js';
 
-const CONTACT_ENTITY = 'contacts';
+const ACCOUNT_ENTITY = 'accounts';
 
 export const customerController = {
   async getAll(request, reply) {
     try {
       const { page = 1, limit = 10, search = '' } = request.query;
 
-      let query = `/${CONTACT_ENTITY}?$select=contactid,firstname,lastname,emailaddress1,telephone1,address1_city,address1_stateorprovince,address1_country,createdon&$count=true`;
+      let query = `/${ACCOUNT_ENTITY}?$select=accountid,name,emailaddress1,telephone1,address1_city,address1_stateorprovince,address1_country,createdon&$count=true`;
 
       if (search) {
-        const searchFilter = `(contains(firstname,'${search}') or contains(lastname,'${search}') or contains(emailaddress1,'${search}'))`;
+        const searchFilter = `(contains(name,'${search}') or contains(emailaddress1,'${search}'))`;
         query += `&$filter=${searchFilter}`;
       }
 
@@ -23,17 +23,17 @@ export const customerController = {
       }
 
       const data = await dataverseClient.get(query);
+      request.log.info(`Dataverse returned ${data.value?.length || 0} accounts`);
 
-      const customers = data.value.map(contact => ({
-        id: contact.contactid,
-        firstName: contact.firstname || '',
-        lastName: contact.lastname || '',
-        email: contact.emailaddress1 || '',
-        phone: contact.telephone1 || '',
-        city: contact.address1_city || '',
-        state: contact.address1_stateorprovince || '',
-        country: contact.address1_country || '',
-        createdAt: contact.createdon,
+      const customers = data.value.map(account => ({
+        id: account.accountid,
+        name: account.name || '',
+        email: account.emailaddress1 || '',
+        phone: account.telephone1 || '',
+        city: account.address1_city || '',
+        state: account.address1_stateorprovince || '',
+        country: account.address1_country || '',
+        createdAt: account.createdon,
       }));
 
       return reply.send({
@@ -57,23 +57,22 @@ export const customerController = {
     try {
       const { id } = request.params;
 
-      const query = `/${CONTACT_ENTITY}(${id})?$select=contactid,firstname,lastname,emailaddress1,telephone1,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,address1_country,createdon,modifiedon`;
+      const query = `/${ACCOUNT_ENTITY}(${id})?$select=accountid,name,emailaddress1,telephone1,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,address1_country,createdon,modifiedon`;
 
-      const contact = await dataverseClient.get(query);
+      const account = await dataverseClient.get(query);
 
       const customer = {
-        id: contact.contactid,
-        firstName: contact.firstname || '',
-        lastName: contact.lastname || '',
-        email: contact.emailaddress1 || '',
-        phone: contact.telephone1 || '',
-        address: contact.address1_line1 || '',
-        city: contact.address1_city || '',
-        state: contact.address1_stateorprovince || '',
-        postalCode: contact.address1_postalcode || '',
-        country: contact.address1_country || '',
-        createdAt: contact.createdon,
-        modifiedAt: contact.modifiedon,
+        id: account.accountid,
+        name: account.name || '',
+        email: account.emailaddress1 || '',
+        phone: account.telephone1 || '',
+        address: account.address1_line1 || '',
+        city: account.address1_city || '',
+        state: account.address1_stateorprovince || '',
+        postalCode: account.address1_postalcode || '',
+        country: account.address1_country || '',
+        createdAt: account.createdon,
+        modifiedAt: account.modifiedon,
       };
 
       return reply.send({ data: customer });
@@ -92,28 +91,24 @@ export const customerController = {
 
   async create(request, reply) {
     try {
-      const { firstName, lastName, email, phone, address, city, state, postalCode, country } = request.body;
+      const { name, email, phone, address, city, state, postalCode, country } = request.body;
 
-      const contactData = {
-        firstname: firstName,
-        lastname: lastName,
-        emailaddress1: email,
-      };
+      const accountData = { name };
 
-      if (phone) contactData.telephone1 = phone;
-      if (address) contactData.address1_line1 = address;
-      if (city) contactData.address1_city = city;
-      if (state) contactData.address1_stateorprovince = state;
-      if (postalCode) contactData.address1_postalcode = postalCode;
-      if (country) contactData.address1_country = country;
+      if (email) accountData.emailaddress1 = email;
+      if (phone) accountData.telephone1 = phone;
+      if (address) accountData.address1_line1 = address;
+      if (city) accountData.address1_city = city;
+      if (state) accountData.address1_stateorprovince = state;
+      if (postalCode) accountData.address1_postalcode = postalCode;
+      if (country) accountData.address1_country = country;
 
-      const result = await dataverseClient.post(`/${CONTACT_ENTITY}`, contactData);
+      const result = await dataverseClient.post(`/${ACCOUNT_ENTITY}`, accountData);
 
       const customer = {
-        id: result.contactid,
-        firstName: result.firstname,
-        lastName: result.lastname,
-        email: result.emailaddress1,
+        id: result.accountid,
+        name: result.name || '',
+        email: result.emailaddress1 || '',
         phone: result.telephone1 || '',
         address: result.address1_line1 || '',
         city: result.address1_city || '',
@@ -136,27 +131,25 @@ export const customerController = {
   async update(request, reply) {
     try {
       const { id } = request.params;
-      const { firstName, lastName, email, phone, address, city, state, postalCode, country } = request.body;
+      const { name, email, phone, address, city, state, postalCode, country } = request.body;
 
-      const contactData = {};
+      const accountData = {};
 
-      if (firstName !== undefined) contactData.firstname = firstName;
-      if (lastName !== undefined) contactData.lastname = lastName;
-      if (email !== undefined) contactData.emailaddress1 = email;
-      if (phone !== undefined) contactData.telephone1 = phone;
-      if (address !== undefined) contactData.address1_line1 = address;
-      if (city !== undefined) contactData.address1_city = city;
-      if (state !== undefined) contactData.address1_stateorprovince = state;
-      if (postalCode !== undefined) contactData.address1_postalcode = postalCode;
-      if (country !== undefined) contactData.address1_country = country;
+      if (name !== undefined) accountData.name = name;
+      if (email !== undefined) accountData.emailaddress1 = email;
+      if (phone !== undefined) accountData.telephone1 = phone;
+      if (address !== undefined) accountData.address1_line1 = address;
+      if (city !== undefined) accountData.address1_city = city;
+      if (state !== undefined) accountData.address1_stateorprovince = state;
+      if (postalCode !== undefined) accountData.address1_postalcode = postalCode;
+      if (country !== undefined) accountData.address1_country = country;
 
-      const result = await dataverseClient.patch(`/${CONTACT_ENTITY}(${id})`, contactData);
+      const result = await dataverseClient.patch(`/${ACCOUNT_ENTITY}(${id})`, accountData);
 
       const customer = {
-        id: result.contactid,
-        firstName: result.firstname,
-        lastName: result.lastname,
-        email: result.emailaddress1,
+        id: result.accountid,
+        name: result.name || '',
+        email: result.emailaddress1 || '',
         phone: result.telephone1 || '',
         address: result.address1_line1 || '',
         city: result.address1_city || '',
@@ -184,7 +177,7 @@ export const customerController = {
     try {
       const { id } = request.params;
 
-      await dataverseClient.delete(`/${CONTACT_ENTITY}(${id})`);
+      await dataverseClient.delete(`/${ACCOUNT_ENTITY}(${id})`);
 
       return reply.code(204).send();
     } catch (error) {

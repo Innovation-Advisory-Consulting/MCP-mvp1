@@ -12,6 +12,13 @@ export const azureAdRoutes = [
           return { Component: Page };
         },
       },
+      {
+        path: 'callback',
+        lazy: async () => {
+          const { Page } = await import('@/pages/auth/azure-ad/callback');
+          return { Component: Page };
+        },
+      },
     ],
   },
 ];
