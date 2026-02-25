@@ -7,7 +7,7 @@ on:
     branches: 
       [ main ]
     paths:
-    - '**'
+    - "backend/**"
     - '.github/workflows/mcp-dataverse-bolt-AutoDeployTrigger-0b4e62a8-07fd-4b14-92ab-dc88937196dd.yml'
 
   # Allow manual trigger 
@@ -45,5 +45,6 @@ jobs:
           imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
+
 
 
